@@ -11,6 +11,12 @@ volumes:
       type: none
       o: bind
       device: prometheus-data
+  loki-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: loki-data
 
 services:
 
@@ -19,17 +25,21 @@ services:
     container_name: k6
     networks:
       - k6
-    ports:
-      - "6565:6565"
+    # ports:
+    #   - "6565:6565"
     environment:
       - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write
     command: run -o experimental-prometheus-rw /scripts/script.js
     volumes:
       - ./scripts:/scripts
+    labels:
+        logging: "promtail"
+        logging_jobname: "k6"
 
   prometheus:
     image: prom/prometheus:v2.47.2
     container_name: prometheus
+    restart: unless-stopped
     command:
       - --web.enable-remote-write-receiver
       - --enable-feature=native-histograms
@@ -39,12 +49,13 @@ services:
       - prometheus-data:/prometheus
     networks:
       - k6
-    ports:
-      - "9090:9090"
+    # ports:
+    #   - "9090:9090"
 
   grafana:
     image: grafana/grafana:10.1.2
     container_name: grafana
+    restart: unless-stopped
     networks:
       - k6
     ports:
@@ -52,3 +63,30 @@ services:
     env_file: ./.env
     volumes:
       - ./grafana:/etc/grafana/provisioning/
+
+  loki:
+    image: grafana/loki:2.9.1
+    container_name: loki
+    restart: unless-stopped
+    # ports:
+    #   - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yaml
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - loki-data:/loki
+    networks:
+      - k6
+
+  promtail:
+    image:  grafana/promtail:2.7.2
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - ./promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro 
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    depends_on:
+      - loki
+    networks:
+      - k6

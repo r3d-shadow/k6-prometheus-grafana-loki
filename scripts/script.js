@@ -10,5 +10,6 @@ export const options = {
 };
 
 export default function () {
+  console.log("this is a log")
   http.get("https://test.k6.io");
 }
