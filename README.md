@@ -27,3 +27,10 @@ The stack includes the following services:
    ```
 
 - Edit the .env file and update the configurations
+
+## Dashboards
+![Dashboard 1](https://raw.githubusercontent.com/redsh4d0w/k6-prometheus-grafana-loki/main/assets/dashboard1.png)
+
+![Dashboard 2](https://raw.githubusercontent.com/redsh4d0w/k6-prometheus-grafana-loki/main/assets/dashboard2.png)
+
+![Dashboard 3](https://raw.githubusercontent.com/redsh4d0w/k6-prometheus-grafana-loki/main/assets/dashboard3.png)
