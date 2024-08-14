@@ -1,6 +1,6 @@
-# k6 Prometheus Grafana Loki
+# k6 Load Testing with Prometheus, Grafana, and Loki Integration
 
-This Docker Compose configuration sets up a scalable environment for load testing using [k6](https://k6.io/) with Prometheus, Grafana, and Loki for monitoring and visualization.
+This repository provides a setup for performance testing using k6, with monitoring and observability powered by Prometheus, Grafana, and Loki.
 
 ## Overview
 
